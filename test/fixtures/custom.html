@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+  <meta charset="utf-8" />
+  <title>사이트별 규칙</title>
+  <body>
+    <span
+      id="customExtend"
+      style="display: none; cursor: pointer"
+      onclick="
+        events.push('custom');
+        this.style.display = 'none';
+      "
+      >⟳</span
+    >
+    <script>
+      window.events = [];
+      setTimeout(() => {
+        document.getElementById('customExtend').style.display = 'inline';
+        events.push('shown');
+      }, 3500);
+    </script>
+  </body>
+</html>

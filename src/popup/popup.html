@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Session Keeper</title>
+    <link rel="stylesheet" href="../shared/ui.css" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Session Keeper</h1>
+      <span id="state" class="muted"></span>
+    </header>
+
+    <label class="switch">
+      <span>자동 연장 사용</span>
+      <input type="checkbox" id="enabled" />
+    </label>
+    <label class="switch" id="site-row">
+      <span>이 사이트에서 사용 <span id="site" class="muted"></span></span>
+      <input type="checkbox" id="site-enabled" />
+    </label>
+
+    <section>
+      <div class="section-head">
+        <h2>최근 자동 처리</h2>
+        <button id="clear-log" type="button">기록 지우기</button>
+      </div>
+      <ol id="log"></ol>
+      <p id="log-empty" class="muted">아직 자동으로 누른 팝업이 없습니다.</p>
+    </section>
+
+    <footer>
+      <button id="open-options" type="button">설정</button>
+    </footer>
+
+    <script src="../shared/rules.js"></script>
+    <script src="../shared/storage.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

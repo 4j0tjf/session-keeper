@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ko">
+  <meta charset="utf-8" />
+  <body>
+    <div id="box" style="display: none">
+      <p>접속 유지 시간이 곧 종료됩니다.</p>
+      <span
+        class="btn"
+        onclick="
+          events.push('extend');
+          box.style.display = 'none';
+        "
+        >시간 연장하기</span
+      >
+    </div>
+    <script>
+      window.events = [];
+      setTimeout(() => {
+        box.style.display = 'block';
+        events.push('shown');
+      }, 1500);
+    </script>
+  </body>
+</html>

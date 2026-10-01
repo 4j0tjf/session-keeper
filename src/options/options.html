@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Session Keeper 설정</title>
+    <link rel="stylesheet" href="../shared/ui.css" />
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Session Keeper 설정</h1>
+      <p class="muted">
+        로그인 세션 연장/만료 팝업을 찾아 자동으로 누릅니다. 목록 항목은 한 줄에 하나씩 적고, 한글은
+        띄어쓰기를 무시하고 비교합니다.
+      </p>
+
+      <section>
+        <label class="switch">
+          <span>
+            브라우저 기본 대화상자(alert / confirm)도 처리
+            <span class="muted hint"
+              >세션 연장을 묻는 확인창은 '확인', 연장·만료 안내 알림창은 바로 닫습니다.</span
+            >
+          </span>
+          <input type="checkbox" id="handleNativeDialogs" />
+        </label>
+      </section>
+
+      <section>
+        <h2>사이트별 직접 지정</h2>
+        <p class="muted hint">
+          자동 인식이 안 되는 사이트는 "호스트 CSS선택자"를 한 줄에 하나씩 적으세요. 해당 요소가 화면에
+          나타나면 누릅니다. 개발자 도구(F12)에서 연장 버튼을 우클릭 → Copy → Copy selector로 선택자를 얻을 수
+          있습니다.
+        </p>
+        <textarea
+          id="customRules"
+          spellcheck="false"
+          placeholder="# 예시&#10;intranet.example.com #btnSessionExtend&#10;erp.example.co.kr .layer_session a.btn_extend"
+        ></textarea>
+      </section>
+
+      <section>
+        <h2>사용하지 않을 사이트</h2>
+        <p class="muted hint">호스트명을 적으면 하위 도메인까지 꺼집니다. 예: example.com</p>
+        <textarea id="disabledSites" spellcheck="false"></textarea>
+      </section>
+
+      <details>
+        <summary>판별 단어 (고급)</summary>
+        <div class="grid">
+          <label>
+            <h2>세션 관련 단어</h2>
+            <span class="muted hint">팝업 문구에 이 중 하나가 있어야 세션 팝업으로 봅니다.</span>
+            <textarea id="sessionKeywords" spellcheck="false"></textarea>
+          </label>
+          <label>
+            <h2>연장 의도 단어</h2>
+            <span class="muted hint">확인창(confirm)은 세션 단어 + 이 단어가 있어야 '확인'합니다.</span>
+            <textarea id="extendKeywords" spellcheck="false"></textarea>
+          </label>
+          <label>
+            <h2>만료 안내 단어</h2>
+            <span class="muted hint"
+              >"확인" 버튼·알림창은 세션 단어 + 만료나 연장 단어가 있어야 누릅니다.</span
+            >
+            <textarea id="expiryKeywords" spellcheck="false"></textarea>
+          </label>
+          <label>
+            <h2>연장 버튼 문구</h2>
+            <span class="muted hint">버튼 글자에 이 문구가 들어 있으면 연장 버튼으로 봅니다.</span>
+            <textarea id="extendLabels" spellcheck="false"></textarea>
+          </label>
+          <label>
+            <h2>확인 버튼 문구</h2>
+            <span class="muted hint">버튼 글자가 정확히 이것이면, 세션 안내 팝업 안일 때만 누릅니다.</span>
+            <textarea id="confirmLabels" spellcheck="false"></textarea>
+          </label>
+          <label>
+            <h2>누르지 않을 버튼 문구</h2>
+            <span class="muted hint">버튼 글자에 이 문구가 들어 있으면 절대 누르지 않습니다.</span>
+            <textarea id="excludeLabels" spellcheck="false"></textarea>
+          </label>
+        </div>
+      </details>
+
+      <div class="actions">
+        <span id="status" class="muted" role="status"></span>
+        <button id="reset" type="button">기본값으로</button>
+        <button id="save" type="button" class="primary">저장</button>
+      </div>
+    </main>
+
+    <script src="../shared/rules.js"></script>
+    <script src="../shared/storage.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>

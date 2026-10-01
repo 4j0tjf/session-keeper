@@ -1,0 +1,119 @@
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --fg: #1d2330;
+  --muted: #677085;
+  --line: #e3e6ec;
+  --card: #f6f7f9;
+  --accent: #2f6fed;
+  --accent-fg: #ffffff;
+  --ok: #1a8a4a;
+  --warn: #b5551d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1b1e24;
+    --fg: #e7e9ee;
+    --muted: #9aa2b2;
+    --line: #2f343d;
+    --card: #23272f;
+    --accent: #6c9cff;
+    --accent-fg: #0d1220;
+    --ok: #4cc37f;
+    --warn: #f0a46c;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* 크롬이 확장 프로그램 페이지에 넣는 기본 글꼴(body { font-size: 75% })을 덮어쓴다. */
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    'Apple SD Gothic Neo',
+    'Malgun Gothic',
+    sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+h1 {
+  font-size: 15px;
+  margin: 0;
+}
+
+h2 {
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+button {
+  font: inherit;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--fg);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.switch input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  flex: none;
+}
+
+textarea {
+  width: 100%;
+  min-height: 90px;
+  font:
+    12px/1.5 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
+  color: var(--fg);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px;
+  resize: vertical;
+}

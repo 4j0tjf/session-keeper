@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+  <meta charset="utf-8" />
+  <title>세션 만료 레이어</title>
+  <body>
+    <p>업무 화면</p>
+    <div id="expired" class="lay_pop" style="display: none; position: absolute; top: 100px; left: 100px">
+      <p>장시간 사용하지 않아 세션이 만료되었습니다.</p>
+      <a
+        href="#"
+        onclick="
+          events.push('ok');
+          this.parentNode.style.display = 'none';
+          return false;
+        "
+        ><img alt="확인" width="60" height="20"
+      /></a>
+    </div>
+    <script>
+      window.events = [];
+      setTimeout(() => {
+        document.getElementById('expired').style.display = 'block';
+        events.push('shown');
+      }, 3500);
+    </script>
+  </body>
+</html>

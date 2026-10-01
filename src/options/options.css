@@ -1,0 +1,58 @@
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+h1 {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+section,
+details {
+  margin-top: 22px;
+}
+
+.hint {
+  display: block;
+  font-size: 12px;
+  margin: 2px 0 8px;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.grid h2 {
+  margin: 0;
+}
+
+.grid textarea {
+  min-height: 160px;
+}
+
+.actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+  padding: 12px 0;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+}
+
+#status {
+  margin-right: auto;
+}

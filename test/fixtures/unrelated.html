@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ko">
+  <meta charset="utf-8" />
+  <title>세션과 무관한 팝업</title>
+  <style>
+    .modal {
+      position: fixed;
+      top: 20%;
+      left: 20%;
+      z-index: 100;
+      background: #fff;
+      border: 1px solid #333;
+      padding: 20px;
+    }
+  </style>
+  <body>
+    <nav>
+      <a
+        href="#"
+        onclick="
+          events.push('logout');
+          return false;
+        "
+        >로그아웃</a
+      >
+    </nav>
+    <!-- 세션 단어가 없는 모달: 누르면 안 된다 -->
+    <div id="contract" class="modal" style="display: none">
+      <p>계약 기간을 1년 연장하시겠습니까?</p>
+      <button type="button" onclick="events.push('contract-extend')">연장</button>
+      <button type="button" onclick="events.push('contract-ok')">확인</button>
+    </div>
+    <!-- 팝업이 아닌 본문 안내: "확인"은 누르면 안 된다 -->
+    <div id="inline" style="display: none">
+      <p>세션 만료 시간이 지나면 자동 로그아웃됩니다.</p>
+      <button type="button" onclick="events.push('inline-ok')">확인</button>
+    </div>
+    <!-- 로그인 입력 모달: 비밀번호 칸이 있으면 누르면 안 된다 -->
+    <div id="login" class="modal" style="display: none; top: 50%">
+      <form
+        onsubmit="
+          events.push('login-submit');
+          return false;
+        "
+      >
+        <p>로그인</p>
+        <input name="id" /> <input type="password" name="pw" />
+        <button type="button" onclick="events.push('keep-login')">로그인 유지</button>
+        <button type="submit">확인</button>
+      </form>
+    </div>
+    <script>
+      window.events = [];
+      setTimeout(() => {
+        for (const id of ['contract', 'inline', 'login']) document.getElementById(id).style.display = 'block';
+        events.push('shown');
+      }, 3500);
+    </script>
+  </body>
+</html>

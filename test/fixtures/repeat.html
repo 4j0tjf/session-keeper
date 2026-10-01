@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+  <meta charset="utf-8" />
+  <title>반복해서 뜨는 팝업</title>
+  <body>
+    <p>업무 화면</p>
+    <dialog id="session">
+      <p>세션 만료 5분 전입니다.</p>
+      <button type="button" onclick="extend()">세션 연장</button>
+    </dialog>
+    <script>
+      window.events = [];
+      const dialog = document.getElementById('session');
+      function extend() {
+        events.push('extend');
+        dialog.close();
+        // 실제 사이트처럼 같은 팝업이 다음 만료 시점에 다시 뜬다.
+        if (events.filter((e) => e === 'extend').length === 1) setTimeout(show, 31000);
+      }
+      function show() {
+        dialog.showModal();
+        events.push('shown');
+      }
+      setTimeout(show, 3500);
+    </script>
+  </body>
+</html>

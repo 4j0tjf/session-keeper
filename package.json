@@ -1,0 +1,14 @@
+{
+  "name": "session-keeper",
+  "version": "1.0.0",
+  "private": true,
+  "description": "로그인 세션 만료/연장 팝업을 자동으로 눌러 주는 Chrome 확장 프로그램",
+  "scripts": {
+    "test": "node --test \"test/*.test.*\"",
+    "icons": "node scripts/build-icons.mjs",
+    "zip": "rm -f session-keeper.zip && zip -r session-keeper.zip manifest.json icons/*.png src"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1"
+  }
+}

@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="ko">
+  <meta charset="utf-8" />
+  <title>로그인 연장 안내</title>
+  <body>
+    <p>로그인 시간이 5분 남았습니다. 로그인 시간을 연장하려면 확인을 누르세요.</p>
+    <input
+      type="button"
+      value="확인"
+      onclick="
+        opener.events.push('popup-ok');
+        window.close();
+      "
+    />
+  </body>
+</html>

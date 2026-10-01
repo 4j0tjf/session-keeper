@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" />
+  <title>javascript: link</title>
+  <body>
+    <p>Dashboard</p>
+    <div id="dialog" role="dialog" aria-modal="true" hidden>
+      <p>Your session is about to expire due to inactivity.</p>
+      <a href="javascript:stay()">Stay signed in</a>
+      <a href="javascript:events.push('signout')">Sign out</a>
+    </div>
+    <script>
+      window.events = [];
+      function stay() {
+        events.push('stay');
+        document.getElementById('dialog').hidden = true;
+      }
+      setTimeout(() => {
+        document.getElementById('dialog').hidden = false;
+        events.push('shown');
+      }, 3500);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+  <meta charset="utf-8" />
+  <title>레이어 팝업</title>
+  <style>
+    .layer_pop {
+      position: fixed;
+      top: 30%;
+      left: 30%;
+      z-index: 1000;
+      background: #fff;
+      border: 1px solid #333;
+      padding: 20px;
+    }
+  </style>
+  <body>
+    <!-- 상단바에 늘 보이는 연장 버튼: 팝업이 아니므로 누르면 안 된다 -->
+    <header>
+      홍길동님 · 남은시간 <span id="timer">59:59</span>
+      <button type="button" onclick="events.push('header-extend')">로그인 연장</button>
+      <a
+        href="#"
+        onclick="
+          events.push('logout');
+          return false;
+        "
+        >로그아웃</a
+      >
+    </header>
+    <main><p>업무 화면</p></main>
+
+    <div id="sessionLayer" class="layer_pop" style="display: none">
+      <p>자동 로그아웃까지 남은 시간 <b id="remain">00:59</b></p>
+      <p>로그인 시간을 연장하시겠습니까?</p>
+      <button type="button" onclick="extend()">연장</button>
+      <button type="button" onclick="events.push('layer-logout')">로그아웃</button>
+    </div>
+
+    <script>
+      window.events = [];
+      let left = 3599;
+      setInterval(() => {
+        left--;
+        document.getElementById('timer').textContent =
+          Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0');
+      }, 500);
+      function extend() {
+        events.push('extend');
+        document.getElementById('sessionLayer').style.display = 'none';
+        alert('로그인 시간이 연장되었습니다.');
+        events.push('after-alert');
+      }
+      setTimeout(() => {
+        document.getElementById('sessionLayer').style.display = 'block';
+        events.push('shown');
+      }, 3500);
+    </script>
+  </body>
+</html>
