@@ -223,3 +223,51 @@ test('설정 페이지에서 저장하면 storage에 반영된다', async () => 
   await page.waitForFunction(() => document.getElementById('status').textContent.includes('잘못된'));
   await page.close();
 });
+
+// 실제로 겪은 문제: 확장 프로그램을 설치하기 전에 열어 둔 탭에서는 alert가 그대로 떴다.
+// 설치/업데이트 때 열려 있는 탭에도 스크립트를 넣는지 확인한다. (확장 프로그램을 다시 로드하므로 맨 마지막에 둔다.)
+test('설치·업데이트 전에 열려 있던 탭에도 바로 적용된다', async () => {
+  await setConfig({});
+  const manager = await context.newPage();
+  await manager.goto('chrome://extensions');
+  const run = (fn) => manager.evaluate(fn, extensionId);
+  await run(
+    () =>
+      new Promise((r) => chrome.developerPrivate.updateProfileConfiguration({ inDeveloperMode: true }, r)),
+  );
+  await run((id) => new Promise((r) => chrome.management.setEnabled(id, false, r)));
+
+  // 확장 프로그램이 꺼진 동안 연 탭: 스크립트가 없다.
+  const page = await open('blank.html');
+  const hooked = () => page.evaluate(() => !String(window.alert).includes('[native code]'));
+  assert.equal(await hooked(), false);
+
+  // 켜기만 해서는 크롬이 열린 탭에 스크립트를 넣지 않는다. 다시 로드하면 onInstalled가 불린다.
+  await run((id) => new Promise((r) => chrome.management.setEnabled(id, true, r)));
+  await run((id) => new Promise((r) => chrome.developerPrivate.reload(id, { failQuietly: true }, r)));
+  await page.waitForFunction(() => !String(window.alert).includes('[native code]'), null, { timeout: 10000 });
+
+  await page.evaluate(() => alert('다른 환경에서 접속이 감지되어\n현재 세션이 종료되었습니다.'));
+  assert.deepEqual(dialogsOf(page), []);
+
+  // 버튼 찾기도 동작한다 (들어간 직후 3초는 원래 보이던 버튼으로 보고 건너뛴다).
+  await page.waitForTimeout(3500);
+  await page.evaluate(() => {
+    const dialog = document.createElement('dialog');
+    dialog.innerHTML = '<p>세션 만료 5분 전입니다.</p><button type="button">세션 연장</button>';
+    dialog.querySelector('button').onclick = () => window.events.push('extend');
+    document.body.append(dialog);
+    dialog.showModal();
+  });
+  await waitForEvent(page, 'extend');
+
+  // 툴바 팝업이 쓰는 확인 메시지에 답한다.
+  const reply = await extensionPage(async (url) => {
+    const [tab] = await chrome.tabs.query({ url });
+    return chrome.tabs.sendMessage(tab.id, { type: 'session-keeper:ping' }, { frameId: 0 });
+  }, page.url());
+  assert.deepEqual(reply, { active: true });
+
+  await page.close();
+  await manager.close();
+});

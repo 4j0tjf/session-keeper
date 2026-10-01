@@ -44,10 +44,14 @@
   // window.open 으로 띄운 팝업창이나 iframe
   const isAuxWindow = window !== window.top || !!window.opener;
 
-  let cfg = null;
-  let active = false;
+  // 저장된 설정을 읽기 전(페이지 로딩 중)에 뜨는 alert/confirm도 처리할 수 있게 기본값으로 시작한다.
+  // 버튼 찾기는 저장된 설정을 읽은 뒤에 시작한다.
+  let cfg = R.withDefaults({});
+  let active = R.isActiveOn(topHost, cfg);
   let customRules = [];
   let watching = false;
+  let observer = null;
+  let intervalId = 0;
   let baselineUntil = 0;
   let lastClickAt = 0;
   let scanTimer = 0;
@@ -57,6 +61,10 @@
   document.addEventListener(DIALOG_EVENT, onPageDialog);
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'sync') loadConfig();
+  });
+  // 툴바 팝업이 "이 탭에서 동작 중인지" 확인할 때 답한다.
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message && message.type === 'session-keeper:ping') sendResponse({ active });
   });
   loadConfig();
 
@@ -76,10 +84,10 @@
   /*
    * page-hook.js가 alert/confirm 직전에 보내는 이벤트. 동기로 전달되므로 여기서
    * preventDefault()하면 그 대화상자는 띄우지 않고 자동으로 답한다.
-   * 설정을 아직 못 읽었거나 꺼져 있으면 그대로 둔다(원래 대화상자가 뜸).
+   * 꺼져 있으면 그대로 둔다(원래 대화상자가 뜸).
    */
   function onPageDialog(event) {
-    if (!cfg || !active || !cfg.handleNativeDialogs) return;
+    if (!active || !cfg.handleNativeDialogs) return;
     let request;
     try {
       request = JSON.parse(event.detail);
@@ -97,14 +105,15 @@
     watching = true;
     const begin = () => {
       if (!isAuxWindow) baselineUntil = Date.now() + BASELINE_MS;
-      new MutationObserver(scheduleScan).observe(document.documentElement, {
+      observer = new MutationObserver(scheduleScan);
+      observer.observe(document.documentElement, {
         childList: true,
         subtree: true,
         attributes: true,
         attributeFilter: ['style', 'class', 'hidden', 'open', 'aria-hidden'],
       });
       // 애니메이션처럼 DOM 변경 없이 보이게 되는 경우를 위한 주기 검사
-      setInterval(scan, SCAN_INTERVAL_MS);
+      intervalId = setInterval(scan, SCAN_INTERVAL_MS);
       scan();
     };
     if (document.readyState === 'loading') {
@@ -122,7 +131,21 @@
     }, SCAN_DEBOUNCE_MS);
   }
 
+  /*
+   * 확장 프로그램이 업데이트되면 이 스크립트는 연결이 끊긴 채 남고, 새 스크립트가 들어온다
+   * (background.js). 같은 버튼을 두 번 누르지 않도록 옛 스크립트는 버튼 찾기를 멈춘다.
+   */
+  function stopWatching() {
+    if (observer) observer.disconnect();
+    clearInterval(intervalId);
+    clearTimeout(scanTimer);
+  }
+
   function scan() {
+    if (!chrome.runtime || !chrome.runtime.id) {
+      stopWatching();
+      return;
+    }
     if (!active || !document.body) return;
 
     // 사라진 버튼은 잊어서, 같은 팝업이 다시 뜨면 또 누를 수 있게 한다.

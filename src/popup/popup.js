@@ -6,7 +6,10 @@
   const $ = (id) => document.getElementById(id);
   const KIND_LABEL = { click: '버튼 클릭', confirm: '확인창 승인', alert: '알림창 닫기' };
 
-  const host = await currentHost();
+  const tab = await activeTab();
+  const host = hostOf(tab);
+  // 이 탭에 콘텐츠 스크립트가 들어 있는지(설치 전에 열린 탭이면 없다)
+  const running = host ? await isRunning(tab.id) : false;
 
   $('enabled').addEventListener('change', (event) => {
     S.saveConfig({ enabled: event.target.checked });
@@ -19,13 +22,21 @@
   });
 
   $('clear-log').addEventListener('click', () => S.clearLog());
+  $('reload-tab').addEventListener('click', () => {
+    chrome.tabs.reload(tab.id);
+    window.close();
+  });
   $('open-options').addEventListener('click', () => chrome.runtime.openOptionsPage());
   chrome.storage.onChanged.addListener(render);
   render();
 
-  async function currentHost() {
+  async function activeTab() {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    return tab;
+  }
+
+  function hostOf(tab) {
     try {
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       const url = new URL(tab.url);
       return url.protocol === 'http:' || url.protocol === 'https:' ? url.hostname : '';
     } catch (e) {
@@ -33,12 +44,23 @@
     }
   }
 
+  async function isRunning(tabId) {
+    try {
+      return !!(await chrome.tabs.sendMessage(tabId, { type: 'session-keeper:ping' }, { frameId: 0 }));
+    } catch (e) {
+      return false;
+    }
+  }
+
   async function render() {
     const cfg = await S.loadConfig();
     const on = host ? R.isActiveOn(host, cfg) : cfg.enabled;
 
-    $('state').textContent = on ? '작동 중' : '꺼짐';
-    $('state').className = on ? 'on' : 'off';
+    const needsReload = on && !!host && !running;
+
+    $('state').textContent = needsReload ? '새로고침 필요' : on ? '작동 중' : '꺼짐';
+    $('state').className = on && !needsReload ? 'on' : 'off';
+    $('reload-hint').hidden = !needsReload;
     $('enabled').checked = cfg.enabled;
     $('site').textContent = host ? '(' + host + ')' : '';
     $('site-enabled').checked = !!host && !cfg.disabledSites.some((site) => R.hostMatches(host, site));

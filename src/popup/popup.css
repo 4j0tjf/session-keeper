@@ -18,6 +18,23 @@ header {
   color: var(--warn);
 }
 
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 2px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--warn);
+}
+
+.notice button {
+  flex: none;
+  padding: 3px 8px;
+  font-size: 12px;
+}
+
 #site {
   margin-left: 4px;
   word-break: break-all;
